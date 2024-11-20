@@ -1,9 +1,41 @@
-var express = require('express');
-var router = express.Router();
+const mongoose=require("mongoose");
+mongoose.connect("mongodb://127.0.0.1:27017/pclone");
+// users schema
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+const UserSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required : true,
+    unique : true,
+    trim : true,
+  },
+  password : {
+    type: String,
+    required: true,
+  },
+  posts:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'Post',
+    required:true,
+  }],
+  dp:{
+    type: String,
+    // default:''
+  },
+  email:{
+    type:String,
+    required: true,
+    unique: true,
+    // match:[/\S+@\S+\.\S+/,'Invalid email format.']
+  },
+  fullname:{
+    type:String,
+    required:true,
+    trim:true,
+  },
+},
+{timestamps:true});
 
-module.exports = router;
+const User = mongoose.model('User',UserSchema);
+
+module.exports = User;
