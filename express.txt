@@ -1,2 +1,15 @@
 Jai Guruji🙏🙏
 here we are going to build apps with backend coded in expressjs 
+Things i will learn are as follows:
+html,css,js
+node,react,expressjs
+github, websockets
+video chat , chatbot api , saving files on user side
+
+routes:
+    /login and signup
+    /profile:
+        profile and posts
+    /feed: all images
+      on click they will open and u can save them
+    /board/:  :whole board will appear

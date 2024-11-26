@@ -1,0 +1,7 @@
+User model
+Board model
+Pin model
+Comment model
+Like model
+Tag model
+Saved pins model
