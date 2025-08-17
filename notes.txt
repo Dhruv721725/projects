@@ -1,0 +1,157 @@
+Step 1: Add Dependencies in pubspec.yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  camera: ^0.11.0+1         # For live camera feed
+  tflite_flutter: ^0.10.4   # To run your TFLite model
+  tflite_flutter_helper: ^0.4.1   # Helpful for preprocessing
+
+
+Run:
+
+flutter pub get
+
+🔹 Step 2: Put Your .tflite Model in Assets
+
+Create a folder assets/ in your Flutter project.
+
+Move your model file there, e.g. assets/model.tflite.
+
+Add this to pubspec.yaml:
+
+flutter:
+  assets:
+    - assets/model.tflite
+
+🔹 Step 3: Set Up Camera & Interpreter
+
+Here’s a simple Flutter code skeleton:
+
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
+
+class CameraApp extends StatefulWidget {
+  @override
+  _CameraAppState createState() => _CameraAppState();
+}
+
+class _CameraAppState extends State<CameraApp> {
+  late CameraController _controller;
+  late Interpreter _interpreter;
+  bool _isBusy = false;
+  String _result = "Waiting for prediction...";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadModel();
+    _initCamera();
+  }
+
+  Future<void> _loadModel() async {
+    _interpreter = await Interpreter.fromAsset('model.tflite');
+    print("✅ Model loaded");
+  }
+
+  Future<void> _initCamera() async {
+    final cameras = await availableCameras();
+    final firstCamera = cameras.first;
+
+    _controller = CameraController(
+      firstCamera,
+      ResolutionPreset.low, // lower res for faster inference
+    );
+
+    await _controller.initialize();
+    _controller.startImageStream((image) {
+      if (!_isBusy) {
+        _isBusy = true;
+        _runModelOnFrame(image);
+      }
+    });
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _runModelOnFrame(CameraImage image) async {
+    // Convert CameraImage to model input (this depends on your model’s input shape)
+    var input = List.generate(1 * 224 * 224 * 3, (i) => 0.0) // Example shape
+        .reshape([1, 224, 224, 3]); 
+
+    // Run inference
+    var output = List.filled(1 * 10, 0).reshape([1, 10]); // Example output
+    _interpreter.run(input, output);
+
+    setState(() {
+      _result = output.toString();
+    });
+
+    _isBusy = false;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _interpreter.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_controller.value.isInitialized) {
+      return Center(child: CircularProgressIndicator());
+    }
+    return Scaffold(
+      appBar: AppBar(title: Text("TFLite Camera App")),
+      body: Stack(
+        children: [
+          CameraPreview(_controller),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              color: Colors.black54,
+              padding: EdgeInsets.all(16),
+              child: Text(
+                _result,
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+🔹 Step 4: Main Entry Point
+import 'package:flutter/material.dart';
+import 'camera_app.dart';
+
+void main() => runApp(MaterialApp(
+  debugShowCheckedModeBanner: false,
+  home: CameraApp(),
+));
+
+🔹 Step 5: Adjust for Your Model
+
+Check your model’s input shape (interpreter.getInputTensors()) → it might be [1, 28, 28, 1] (e.g. grayscale) or [1, 224, 224, 3].
+
+Preprocess the camera frame:
+
+Resize to match input size.
+
+Normalize (divide by 255.0 if model trained that way).
+
+Postprocess output (e.g. softmax, argmax).
+
+✅ With this, you’ll have:
+
+Live camera feed.
+
+Real-time inference using your .tflite model.
+
+Prediction results displayed on screen.
