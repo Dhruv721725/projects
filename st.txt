@@ -1,0 +1,7 @@
+| Challenge / Event                | Focus Area                              | Learning Opportunity                 | Swag / Prizes Offered                             |
+| -------------------------------- | --------------------------------------- | ------------------------------------ | ------------------------------------------------- |
+| **Flutter Puzzle Hack**          | Slide puzzle recreation                 | UI/animation, Flutter web, design    | Cash, MacBook Pro, swag, certificates             |
+| **Global Gamers Challenge**      | Flutter games with sustainability theme | Multi-platform, accessibility design | NYC trip, swag, cash prizes, recognition          |
+| **Syncfusion Flutter Challenge** | Widget integration                      | Chart usage and UI widgets           | Not clear — presumably modest or learning-focused |
+| **Flutter Clock Challenge**      | Creative clock UI                       | UI creativity, Flutter basics        | iMac Pro, Smart Displays/Clocks                   |
+| **Flutter Vikings Challenges**   | Community activities during conference  | Writing, drawing, coding, design     | Dash, books, stickers, cash, headphones           |
